@@ -65,21 +65,26 @@ io.on('connection', (socket) => {
 });
 
 // Helper function for paddle collision detection
-function checkPaddleCollision(puck, paddle) {
+function checkPaddleCollision(puck, paddle, isPlayer1) {
+    const puckRadius = 15;
+    const paddleRadius = 30;
     const dx = puck.x - paddle.x;
     const dy = puck.y - paddle.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const minDistance = 15 + 30; // puck radius + paddle radius
+    const minDistance = puckRadius + paddleRadius;
     
-    if (distance < minDistance) {
+    // Only check collision if puck is moving toward the paddle
+    const movingTowardPaddle = isPlayer1 ? puck.vx < 0 : puck.vx > 0;
+    
+    if (distance < minDistance && movingTowardPaddle) {
         // Collision detected
         // Normalize the collision vector
         const nx = dx / distance;
         const ny = dy / distance;
         
-        // Bounce the puck away from the paddle
-        puck.vx = nx * 6; // increased speed on paddle hit
-        puck.vy = ny * 6;
+        // Bounce the puck away from the paddle with enhanced speed
+        puck.vx = nx * 7; // increased speed on paddle hit
+        puck.vy = ny * 5 + (dy > 0 ? 1 : -1); // add spin based on paddle position
         
         // Move puck outside collision radius to prevent overlap
         puck.x = paddle.x + nx * minDistance;
@@ -96,8 +101,16 @@ setInterval(() => {
     gameState.puck.y += gameState.puck.vy;
     
     // Check paddle collisions
-    checkPaddleCollision(gameState.puck, gameState.player1);
-    checkPaddleCollision(gameState.puck, gameState.player2);
+    checkPaddleCollision(gameState.puck, gameState.player1, true);
+    checkPaddleCollision(gameState.puck, gameState.player2, false);
+    
+    // Middle line collision (x = 400)
+    const puckRadius = 15;
+    if (Math.abs(gameState.puck.x - 400) < puckRadius && gameState.puck.vx !== 0) {
+        gameState.puck.vx *= -1;
+        // Clamp puck to prevent it from getting stuck
+        gameState.puck.x = gameState.puck.vx > 0 ? 400 + puckRadius : 400 - puckRadius;
+    }
     
     // Wall bouncing
     if (gameState.puck.x < 15 || gameState.puck.x > 785) gameState.puck.vx *= -1;
