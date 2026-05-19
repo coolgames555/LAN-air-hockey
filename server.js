@@ -32,6 +32,14 @@ io.on('connection', (socket) => {
             socket.emit('roleDenied', 'Host slot is already taken!');
         }
     });
+    socket.on('requestReset', () => {
+        // Reset game state
+        gameState = {
+            puck: { x: 400, y: 300, vx: 3, vy: 2 },
+            player1: { x: 150, y: 300 },
+            player2: { x: 650, y: 300 }
+        };
+    });
 
     // Player clicks "Join"
     socket.on('requestJoin', () => {

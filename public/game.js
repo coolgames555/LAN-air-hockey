@@ -17,6 +17,9 @@ document.getElementById('hostBtn').addEventListener('click', () => {
 document.getElementById('joinBtn').addEventListener('click', () => {
     socket.emit('requestJoin');
 });
+document.getElementById('resetBtn').addEventListener('click', () => {
+    socket.emit('requestReset');
+});
 
 // --- Server Confirmation Responses ---
 socket.on('roleConfirmed', (role) => {
