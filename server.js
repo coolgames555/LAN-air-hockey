@@ -3,11 +3,12 @@ const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
+
 app.use(express.static('public'));
 
 const scoreP1 = 0;
 const scoreP2 = 0;
-
+ 
 let players = {
     player1: null, // Stores socket.id of the Host
     player2: null  // Stores socket.id of the Joiner
@@ -38,8 +39,11 @@ io.on('connection', (socket) => {
             puck: { x: 400, y: 300, vx: 3, vy: 2 },
             player1: { x: 150, y: 300 },
             player2: { x: 650, y: 300 }
+            const scoreP1 = 0;
+            const scoreP2 = 0;
         };
     });
+
 
     // Player clicks "Join"
     socket.on('requestJoin', () => {
@@ -82,7 +86,30 @@ function checkPaddleCollision(puck, paddle, isPlayer1) {
     const dx = puck.x - paddle.x;
     const dy = puck.y - paddle.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
+    const gdx1 = puck.x - goal1.x;
+    const gdx2 = puck.x - goal2.x;
+    const gdy1 = puck.y - goal1.y;
+    const gdy2 = puck.y - goal2.y;
+    const goalRadius = 35;
+    const distanceToGoal1 = Math.sqrt(gdx1 * gdx1 + gdy1 * gdy1);
+    const distanceToGoal2 = Math.sqrt(gdx2 * gdx2 + gdy2 * gdy2);
     const minDistance = puckRadius + paddleRadius;
+    const gx1 = 0
+    const gx2 = 1080;
+    const gy1 = 360;
+    const gy2 = 360;
+    const minGoalDistance = goalRadius + puckRadius;
+
+    if (distanceToGoal1 < minGoalDistance) {
+        // Player 2 scores
+        scoreP2++;
+        document.getElementById("scoreBoard).textContent = scoreP1 + " - " + scoreP2;
+    }
+    if (distanceToGoal2 < minGoalDistance) {
+        // Player 1 scores
+        scoreP1++;
+        document.getElementById("scoreBoard").textContent = scoreP1 + " - " + scoreP2;
+    }
     
     // Only check collision if puck is moving toward the paddle
     const movingTowardPaddle = isPlayer1 ? puck.vx < 0 : puck.vx > 0;

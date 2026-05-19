@@ -56,6 +56,18 @@ socket.on('gameStateUpdate', (state) => {
     ctx.arc(state.player1.x, state.player1.y, 30, 0, Math.PI * 2);
     ctx.fill();
 
+    // Draw Goal for Player 1
+    ctx.fillStyle = '#0055ff';
+    ctx.beginPath();
+    ctx.arc(gx1, gy1, 35, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw Goal for Player 2
+    ctx.fillStyle = '#ff3333';
+    ctx.beginPath();
+    ctx.arc(gx2, gy2, 35, 0, Math.PI * 2);
+    ctx.fill();
+
     // Draw Red Mallet (Joiner)
     ctx.fillStyle = '#ff3333';
     ctx.beginPath();
