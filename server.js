@@ -87,6 +87,28 @@ function checkPaddleCollision(puck, paddle, isPlayer1) {
     const dy = puck.y - paddle.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const minDistance = puckRadius + paddleRadius;
+    let gdx1 = puck.x - goal1.x;
+    let gdx2 = puck.x - goal2.x;
+    let gdy1 = puck.y - goal1.y;
+    let gdy2 = puck.y - goal2.y;
+    let goalRadius = 35;
+    let distanceToGoal1 = Math.sqrt(gdx1 * gdx1 + gdy1 * gdy1);
+    let distanceToGoal2 = Math.sqrt(gdx2 * gdx2 + gdy2 * gdy2);
+    let gx1 = 0;
+    let gx2 = 1080;
+    let gy1 = 360;
+    let gy2 = 360;
+    let minGoalDistance = goalRadius + puckRadius;
+
+    if (distanceToGoal1 < minGoalDistance) {
+        // Player 2 scores
+        scoreP2++;
+        document.getElementById("scoreBoard").textContent = scoreP1 + " - " + scoreP2;
+    }
+    if (distanceToGoal2 < minGoalDistance) {
+        // Player 1 scores
+        scoreP1++;
+        document.getElementById("scoreBoard").textContent = scoreP1 + " - " + scoreP2;
 
     // Only check collision if puck is moving toward the paddle
     const movingTowardPaddle = isPlayer1 ? puck.vx < 0 : puck.vx > 0;
