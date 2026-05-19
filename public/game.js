@@ -43,8 +43,8 @@ socket.on('gameStateUpdate', (state) => {
     ctx.strokeStyle = '#ccc';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(400, 0);
-    ctx.lineTo(400, 600);
+    ctx.moveTo(540, 0);
+    ctx.lineTo(540, 720);
     ctx.stroke();
     
     // Draw Blue Mallet (Host)
