@@ -64,11 +64,42 @@ io.on('connection', (socket) => {
     });
 });
 
+// Helper function for paddle collision detection
+function checkPaddleCollision(puck, paddle) {
+    const dx = puck.x - paddle.x;
+    const dy = puck.y - paddle.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const minDistance = 15 + 30; // puck radius + paddle radius
+    
+    if (distance < minDistance) {
+        // Collision detected
+        // Normalize the collision vector
+        const nx = dx / distance;
+        const ny = dy / distance;
+        
+        // Bounce the puck away from the paddle
+        puck.vx = nx * 6; // increased speed on paddle hit
+        puck.vy = ny * 6;
+        
+        // Move puck outside collision radius to prevent overlap
+        puck.x = paddle.x + nx * minDistance;
+        puck.y = paddle.y + ny * minDistance;
+        
+        return true;
+    }
+    return false;
+}
+
 // Physics and sync ticker (60 FPS)
 setInterval(() => {
     gameState.puck.x += gameState.puck.vx;
     gameState.puck.y += gameState.puck.vy;
     
+    // Check paddle collisions
+    checkPaddleCollision(gameState.puck, gameState.player1);
+    checkPaddleCollision(gameState.puck, gameState.player2);
+    
+    // Wall bouncing
     if (gameState.puck.x < 15 || gameState.puck.x > 785) gameState.puck.vx *= -1;
     if (gameState.puck.y < 15 || gameState.puck.y > 585) gameState.puck.vy *= -1;
 
