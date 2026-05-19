@@ -8,6 +8,10 @@ const errorMsg = document.getElementById('menuError');
 const statusText = document.getElementById('status');
 
 let myRole = 'spectator';
+let gx1 = 0;
+let gy1 = 360;
+let gx2 = 1080;
+let gy2 = 360;
 
 // --- UI Interaction Hooks ---
 document.getElementById('hostBtn').addEventListener('click', () => {
@@ -62,16 +66,16 @@ socket.on('gameStateUpdate', (state) => {
     ctx.arc(gx1, gy1, 35, 0, Math.PI * 2);
     ctx.fill();
 
+        // Draw Red Mallet (Joiner)
+    ctx.fillStyle = '#ff3333';
+    ctx.beginPath();
+    ctx.arc(state.player2.x, state.player2.y, 30, 0, Math.PI * 2);
+    ctx.fill();
+
     // Draw Goal for Player 2
     ctx.fillStyle = '#ff3333';
     ctx.beginPath();
     ctx.arc(gx2, gy2, 35, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Draw Red Mallet (Joiner)
-    ctx.fillStyle = '#ff3333';
-    ctx.beginPath();
-    ctx.arc(state.player2.x, state.player2.y, 30, 0, Math.PI * 2);
     ctx.fill();
 
     // Draw Puck
