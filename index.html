@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LAN Air Hockey</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #222; color: #fff; }
+        #menu { margin-top: 100px; }
+        button { font-size: 20px; padding: 15px 30px; margin: 10px; cursor: pointer; }
+        #gameContainer { display: none; }
+        canvas { background: #fff; border: 4px solid #444; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+    <!-- LOBBY MENU -->
+    <div id="menu">
+        <h1>Air Hockey LAN</h1>
+        <p>Select your role to start:</p>
+        <button id="hostBtn">Host Game (Player 1)</button>
+        <button id="joinBtn">Join Game (Player 2)</button>
+        <p id="menuError" style="color: red;"></p>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="gameContainer">
+        <h2 id="status">Spectating</h2>
+        <canvas id="rink" width="800" height="600"></canvas>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
