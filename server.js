@@ -5,6 +5,9 @@ const io = require('socket.io')(http);
 
 app.use(express.static('public'));
 
+const scoreP1 = 0;
+const scoreP2 = 0;
+
 let players = {
     player1: null, // Stores socket.id of the Host
     player2: null  // Stores socket.id of the Joiner
@@ -44,10 +47,10 @@ io.on('connection', (socket) => {
     // Handle game controller coordinates
     socket.on('updateMallet', (data) => {
         if (socket.id === players.player1) {
-            gameState.player1.x = Math.min(data.x, 370);
+            gameState.player1.x = Math.min(data.x, 525);
             gameState.player1.y = data.y;
         } else if (socket.id === players.player2) {
-            gameState.player2.x = Math.max(data.x, 430);
+            gameState.player2.x = Math.max(data.x, 555);
             gameState.player2.y = data.y;
         }
     });
