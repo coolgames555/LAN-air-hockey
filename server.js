@@ -104,17 +104,9 @@ setInterval(() => {
     checkPaddleCollision(gameState.puck, gameState.player1, true);
     checkPaddleCollision(gameState.puck, gameState.player2, false);
     
-    // Middle line collision (x = 400)
-    const puckRadius = 15;
-    if (Math.abs(gameState.puck.x - 400) < puckRadius && gameState.puck.vx !== 0) {
-        gameState.puck.vx *= -1;
-        // Clamp puck to prevent it from getting stuck
-        gameState.puck.x = gameState.puck.vx > 0 ? 400 + puckRadius : 400 - puckRadius;
-    }
-    
     // Wall bouncing
-    if (gameState.puck.x < 15 || gameState.puck.x > 785) gameState.puck.vx *= -1;
-    if (gameState.puck.y < 15 || gameState.puck.y > 585) gameState.puck.vy *= -1;
+    if (gameState.puck.x < 15 || gameState.puck.x > 1065) gameState.puck.vx *= -1;
+    if (gameState.puck.y < 15 || gameState.puck.y > 705) gameState.puck.vy *= -1;
 
     io.emit('gameStateUpdate', gameState);
 }, 1000 / 60);
