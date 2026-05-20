@@ -102,8 +102,8 @@ function checkPaddleCollision(puck, paddle, isPlayer1) {
         const nx = dx / distance;
         const ny = dy / distance;
 
-        puck.vx = nx * 7;
-        puck.vy = ny * 5 + (dy > 0 ? 1 : -1);
+        puck.vx = nx * 15;
+        puck.vy = ny * 12 + (dy > 0 ? 1 : -1);
         puck.x = paddle.x + nx * minDistance;
         puck.y = paddle.y + ny * minDistance;
 
