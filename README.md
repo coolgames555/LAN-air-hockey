@@ -5,9 +5,9 @@ i think i used to have a good readme, but apparently its not long enough. AI TIM
 
 A high-performance, real-time multiplayer air hockey game built for quick, competitive match-ups. Originally designed strictly for local network environments, the architecture has been upgraded to support global online matchmaking and direct play—**no LAN required!**
 
-Partially vibe-coded, but mostly engineered with precision, logic, and late-night sessions. 
+Partially AI-coded, but mostly engineered with precision, logic, and late-night sessions. 
 
-> 🎯 **The Ultimate Goal:** Developing this project to stack up enough Macondo coins to finally score a **Hasselblad X2D**! 📸
+> 🎯 **The Ultimate Goal:** Developing this project to stack up enough Macondo coins to finally score a **Macbook air**! 
 
 ---
 
