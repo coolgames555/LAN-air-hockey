@@ -13,7 +13,7 @@ let gy1 = 360;
 let gx2 = 1080;
 let gy2 = 360;
 
-// --- UI Interaction Hooks ---
+// ----UI Interaction Hooks----
 document.getElementById('hostBtn').addEventListener('click', () => {
     socket.emit('requestHost');
 });
