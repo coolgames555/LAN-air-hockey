@@ -7,8 +7,8 @@ app.use(express.static('public'));
 
 const GAME_WIDTH = 1080;
 const GAME_HEIGHT = 720;
-const PUCK_RADIUS = 15;
-const PADDLE_RADIUS = 30;
+const PUCK_RADIUS = 22.5;
+const PADDLE_RADIUS = 45;
 const GOAL_RADIUS = 65;
 const LEFT_GOAL = { x: 0, y: GAME_HEIGHT / 2 };
 const RIGHT_GOAL = { x: GAME_WIDTH, y: GAME_HEIGHT / 2 };

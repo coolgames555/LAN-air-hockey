@@ -2,6 +2,17 @@ const socket = io();
 const canvas = document.getElementById('rink');
 const ctx = canvas.getContext('2d');
 
+const paddle1Img = new Image();
+const paddle2Img = new Image();
+const puckImg = new Image();
+
+paddle1Img.src = 'bluePaddle.png';
+paddle2Img.src = 'redPaddle.png';
+puckImg.src = 'puck.png';
+
+const paddleSize = 60;
+const puckSize = 30;
+
 const menuDiv = document.getElementById('menu');
 const gameContainer = document.getElementById('gameContainer');
 const errorMsg = document.getElementById('menuError');
@@ -13,9 +24,6 @@ let gx1 = 0;
 let gy1 = 360;
 let gx2 = 1080;
 let gy2 = 360;
-
-const puckImg = new Image();
-puckImg.src = 'puck.png';
 
 // ----UI Interaction Hooks----
 document.getElementById('hostBtn').addEventListener('click', () => {
@@ -60,10 +68,20 @@ socket.on('gameStateUpdate', (state) => {
     ctx.stroke();
     
     // Draw Blue Mallet (Host)
-    ctx.fillStyle = '#0055ff';
-    ctx.beginPath();
-    ctx.arc(state.player1.x, state.player1.y, 30, 0, Math.PI * 2);
-    ctx.fill();
+    if (paddle1Img.complete && paddle1Img.naturalWidth !== 0) {
+        ctx.drawImage(
+            paddle1Img,
+            state.player1.x - paddleSize / 2,
+            state.player1.y - paddleSize / 2,
+            paddleSize,
+            paddleSize
+        );
+    } else {
+        ctx.fillStyle = '#0055ff';
+        ctx.beginPath();
+        ctx.arc(state.player1.x, state.player1.y, paddleSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
     // Draw Goal for Player 1
     ctx.fillStyle = '#0055ff';
@@ -71,11 +89,21 @@ socket.on('gameStateUpdate', (state) => {
     ctx.arc(gx1, gy1, 65, 0, Math.PI * 2);
     ctx.fill();
 
-        // Draw Red Mallet (Joiner)
-    ctx.fillStyle = '#ff3333';
-    ctx.beginPath();
-    ctx.arc(state.player2.x, state.player2.y, 30, 0, Math.PI * 2);
-    ctx.fill();
+    // Draw Red Mallet (Joiner)
+    if (paddle2Img.complete && paddle2Img.naturalWidth !== 0) {
+        ctx.drawImage(
+            paddle2Img,
+            state.player2.x - paddleSize / 2,
+            state.player2.y - paddleSize / 2,
+            paddleSize,
+            paddleSize
+        );
+    } else {
+        ctx.fillStyle = '#ff3333';
+        ctx.beginPath();
+        ctx.arc(state.player2.x, state.player2.y, paddleSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
     // Draw Goal for Player 2
     ctx.fillStyle = '#ff3333';
@@ -84,21 +112,20 @@ socket.on('gameStateUpdate', (state) => {
     ctx.fill();
 
     // Draw Puck
-const puckSize = 45;
-if (puckImg.complete) {
-    ctx.drawImage(
-        puckImg,
-        state.puck.x - puckSize / 2,
-        state.puck.y - puckSize / 2,
-        puckSize,
-        puckSize
-    );
-} else {
-    ctx.fillStyle = '#111111';
-    ctx.beginPath();
-    ctx.arc(state.puck.x, state.puck.y, puckSize / 2, 0, Math.PI * 2);
-    ctx.fill();
-}
+    if (puckImg.complete && puckImg.naturalWidth !== 0) {
+        ctx.drawImage(
+            puckImg,
+            state.puck.x - puckSize / 2,
+            state.puck.y - puckSize / 2,
+            puckSize,
+            puckSize
+        );
+    } else {
+        ctx.fillStyle = '#111111';
+        ctx.beginPath();
+        ctx.arc(state.puck.x, state.puck.y, puckSize / 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
 });
 
 // --- Mouse Controls Handling ---
