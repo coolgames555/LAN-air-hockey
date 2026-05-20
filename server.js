@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
 
     socket.on('requestReset', () => {
         gameState = {
-            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3, vy: 2 },
+            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 15, vy: 15 },
             player1: { x: 150, y: 300 },
             player2: { x: 650, y: 300 },
             scoreP1: 0,
