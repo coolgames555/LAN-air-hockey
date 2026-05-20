@@ -10,8 +10,8 @@ paddle1Img.src = 'bluePaddle.png';
 paddle2Img.src = 'redPaddle.png';
 puckImg.src = 'puck.png';
 
-const paddleSize = 60;
-const puckSize = 30;
+const paddleSize = 90;
+const puckSize = 45;
 
 const menuDiv = document.getElementById('menu');
 const gameContainer = document.getElementById('gameContainer');
@@ -58,14 +58,7 @@ socket.on('gameStateUpdate', (state) => {
 
     scoreBoard.textContent = `${state.scoreP1} - ${state.scoreP2}`;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Rink separator line
-    ctx.strokeStyle = '#ccc';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(540, 0);
-    ctx.lineTo(540, 720);
-    ctx.stroke();
+
     
     // Draw Blue Mallet (Host)
     if (paddle1Img.complete && paddle1Img.naturalWidth !== 0) {
