@@ -85,7 +85,7 @@ function resetPuck() {
     gameState.puck = {
         x: GAME_WIDTH / 2,
         y: GAME_HEIGHT / 2,
-        vx: 15
+        vx: 15,
         vy: 15
     };
 }
