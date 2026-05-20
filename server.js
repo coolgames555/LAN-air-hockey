@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
 
     socket.on('requestReset', () => {
         gameState = {
-            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 15, vy: 15 },
+            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3, vy: 2 },
             player1: { x: 150, y: 300 },
             player2: { x: 650, y: 300 },
             scoreP1: 0,
@@ -96,14 +96,13 @@ function checkPaddleCollision(puck, paddle, isPlayer1) {
     const distance = Math.sqrt(dx * dx + dy * dy);
     const minDistance = PUCK_RADIUS + PADDLE_RADIUS;
 
-    const movingTowardPaddle = isPlayer1 ? puck.vx < 0 : puck.vx > 0;
-
-    if (distance < minDistance && movingTowardPaddle) {
+    if (distance < minDistance) {
         const nx = dx / distance;
         const ny = dy / distance;
+        const speed = Math.sqrt(puck.vx * puck.vx + puck.vy * puck.vy) || 7;
 
-        puck.vx = nx * 15;
-        puck.vy = ny * 12 + (dy > 0 ? 1 : -1);
+        puck.vx = nx * Math.max(speed, 14);
+        puck.vy = ny * Math.max(speed * 0.7, 10) + (dy > 0 ? 1 : -1);
         puck.x = paddle.x + nx * minDistance;
         puck.y = paddle.y + ny * minDistance;
 
