@@ -14,6 +14,9 @@ let gy1 = 360;
 let gx2 = 1080;
 let gy2 = 360;
 
+const puckImg = new Image();
+puckImg.src = 'puck.png';
+
 // ----UI Interaction Hooks----
 document.getElementById('hostBtn').addEventListener('click', () => {
     socket.emit('requestHost');
@@ -81,10 +84,21 @@ socket.on('gameStateUpdate', (state) => {
     ctx.fill();
 
     // Draw Puck
+const puckSize = 30;
+if (puckImg.complete) {
+    ctx.drawImage(
+        puckImg,
+        state.puck.x - puckSize / 2,
+        state.puck.y - puckSize / 2,
+        puckSize,
+        puckSize
+    );
+} else {
     ctx.fillStyle = '#111111';
     ctx.beginPath();
-    ctx.arc(state.puck.x, state.puck.y, 15, 0, Math.PI * 2);
+    ctx.arc(state.puck.x, state.puck.y, puckSize / 2, 0, Math.PI * 2);
     ctx.fill();
+}
 });
 
 // --- Mouse Controls Handling ---
