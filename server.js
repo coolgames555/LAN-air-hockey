@@ -85,8 +85,8 @@ function resetPuck() {
     gameState.puck = {
         x: GAME_WIDTH / 2,
         y: GAME_HEIGHT / 2,
-        vx: Math.random() < 5 ? 3 : -3,
-        vy: Math.random() < 5 ? 2 : -2
+        vx: 15
+        vy: 15
     };
 }
 
