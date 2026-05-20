@@ -29,8 +29,7 @@ Partially AI-coded, but mostly engineered with precision, logic, and late-night 
 ## 🐛 Known Issues & Roadmap
 
 ### 🚨 Current Focus: The Paddle Collision Throttle Bug
-* **The Problem:** The current collision detection loop introduces an artificial bottleneck, limiting the number of consecutive paddle-to-puck impacts allowed within a tight time window. 
-* **The Fix:** A refactor of the physics update loop is underway to separate local collision detection completely from the network tick rate. This will allow for fluid, unlimited continuous hits. *Fix arriving in the next push!*
+* **The Problem:** Hitting the puck into a corner causes it to glitch-out
 
 ---
 
