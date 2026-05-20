@@ -6,6 +6,7 @@ const menuDiv = document.getElementById('menu');
 const gameContainer = document.getElementById('gameContainer');
 const errorMsg = document.getElementById('menuError');
 const statusText = document.getElementById('status');
+const scoreBoard = document.getElementById('scoreBoard');
 
 let myRole = 'spectator';
 let gx1 = 0;
@@ -44,6 +45,7 @@ socket.on('gameStateUpdate', (state) => {
     // Only bother drawing if the user has advanced past the menu screen
     if (gameContainer.style.display !== 'block') return;
 
+    scoreBoard.textContent = `${state.scoreP1} - ${state.scoreP2}`;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // Rink separator line
