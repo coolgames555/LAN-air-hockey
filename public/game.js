@@ -84,7 +84,7 @@ socket.on('gameStateUpdate', (state) => {
     ctx.fill();
 
     // Draw Puck
-const puckSize = 30;
+const puckSize = 45;
 if (puckImg.complete) {
     ctx.drawImage(
         puckImg,
