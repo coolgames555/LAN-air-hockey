@@ -7,11 +7,12 @@ app.use(express.static('public'));
 
 const GAME_WIDTH = 1080;
 const GAME_HEIGHT = 720;
-const PUCK_RADIUS = 22.5;
+const PUCK_RADIUS = 30;
 const PADDLE_RADIUS = 45;
 const GOAL_RADIUS = 65;
 const LEFT_GOAL = { x: 0, y: GAME_HEIGHT / 2 };
 const RIGHT_GOAL = { x: GAME_WIDTH, y: GAME_HEIGHT / 2 };
+let speedMultiplier = 1;
 
 let players = {
     player1: null,
@@ -19,7 +20,7 @@ let players = {
 };
 
 let gameState = {
-    puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3, vy: 2 },
+    puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3 * speedMultiplier, vy: 2 * speedMultiplier },
     player1: { x: 150, y: 300 },
     player2: { x: 650, y: 300 },
     scoreP1: 0,
@@ -51,7 +52,7 @@ io.on('connection', (socket) => {
 
     socket.on('requestReset', () => {
         gameState = {
-            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3, vy: 2 },
+            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3 * speedMultiplier, vy: 2 * speedMultiplier },
             player1: { x: 150, y: 300 },
             player2: { x: 650, y: 300 },
             scoreP1: 0,
@@ -70,6 +71,23 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('changeSpeedMultiplier', (newSpeed) => {
+        console.log('Received changeSpeedMultiplier event with value:', newSpeed);
+        if (newSpeed <= 0) {
+            console.log('Invalid speed multiplier');
+            return;
+        }
+        speedMultiplier = newSpeed;
+        console.log('Updated speedMultiplier to:', speedMultiplier);
+        // Reset puck with new speed
+        gameState.puck.x = GAME_WIDTH / 2;
+        gameState.puck.y = GAME_HEIGHT / 2;
+        gameState.puck.vx = 3 * speedMultiplier;
+        gameState.puck.vy = 2 * speedMultiplier;
+        io.emit('gameStateUpdate', gameState);
+        console.log('Puck velocity updated to:', gameState.puck.vx, gameState.puck.vy);
+    });
+
     socket.on('disconnect', () => {
         if (socket.id === players.player1) {
             players.player1 = null;
@@ -85,8 +103,8 @@ function resetPuck() {
     gameState.puck = {
         x: GAME_WIDTH / 2,
         y: GAME_HEIGHT / 2,
-        vx: 15,
-        vy: 15
+        vx: 15 * speedMultiplier,
+        vy: 15 * speedMultiplier
     };
 }
 
@@ -99,10 +117,10 @@ function checkPaddleCollision(puck, paddle, isPlayer1) {
     if (distance < minDistance) {
         const nx = dx / distance;
         const ny = dy / distance;
-        const speed = Math.sqrt(puck.vx * puck.vx + puck.vy * puck.vy) || 7;
+        const baseSpeed = 7 * speedMultiplier;
 
-        puck.vx = nx * 7;
-        puck.vy = ny * 5 + (dy > 0 ? 1 : -1);
+        puck.vx = nx * baseSpeed;
+        puck.vy = ny * 5 * speedMultiplier + (dy > 0 ? 1 : -1);
         puck.x = paddle.x + nx * minDistance;
         puck.y = paddle.y + ny * minDistance;
 

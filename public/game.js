@@ -121,6 +121,22 @@ socket.on('gameStateUpdate', (state) => {
     }
 });
 
+// --- Speed Multiplier Control ---
+function changeSM() {
+    const newSpeed = prompt("Enter new hit speed multiplier:");
+    console.log('Prompt value:', newSpeed);
+    if (newSpeed !== null && newSpeed.trim() !== '') {
+        const parsedSpeed = parseFloat(newSpeed);
+        console.log('Parsed speed:', parsedSpeed);
+        if (!isNaN(parsedSpeed) && parsedSpeed > 0) {
+            console.log('Emitting changeSpeedMultiplier with:', parsedSpeed);
+            socket.emit('changeSpeedMultiplier', parsedSpeed);
+        } else {
+            alert('Please enter a valid positive number');
+        }
+    }
+}
+
 // --- Mouse Controls Handling ---
 canvas.addEventListener('mousemove', (e) => {
     if (myRole === 'spectator') return;
