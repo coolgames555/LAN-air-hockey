@@ -1,5 +1,5 @@
 # LAN-air-hockey
-i think i used to have a good readme, but apparently its not long enough. AI TIME
+i think i used to have a good readme, but apparently its not long enough. it was 1k lines. hack club asked for this:
 
 # 🪩 Air Hockey Multiplayer
 
