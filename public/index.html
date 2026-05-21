@@ -6,15 +6,26 @@
     <style>
         body { font-family: sans-serif; text-align: center; background: #222; color: #fff; }
         #menu { margin-top: 100px; }
+        #roomSelector { margin-top: 100px; }
         button { font-size: 20px; padding: 15px 30px; margin: 10px; cursor: pointer; }
+        input { font-size: 18px; padding: 10px; margin: 10px; }
         #gameContainer { display: none; }
         canvas { background: url('bg.png') center center / cover no-repeat; border: 4px solid #444; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
 
+    <!-- ROOM SELECTION -->
+    <div id="roomSelector">
+        <h1>Air Hockey LAN</h1>
+        <p>Enter a room code:</p>
+        <input type="text" id="roomCodeInput" placeholder="e.g., ROOM123" maxlength="20">
+        <button id="joinRoomBtn">Join Room</button>
+        <p id="roomError" style="color: red;"></p>
+    </div>
+
     <!-- LOBBY MENU -->
-    <div id="menu">
+    <div id="menu" style="display: none;">
         <h1>Air Hockey LAN</h1>
         <p>Select your role to start:</p>
         <button id="hostBtn">Player 1</button>

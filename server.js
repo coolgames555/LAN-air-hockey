@@ -12,103 +12,143 @@ const PADDLE_RADIUS = 45;
 const GOAL_RADIUS = 65;
 const LEFT_GOAL = { x: 0, y: GAME_HEIGHT / 2 };
 const RIGHT_GOAL = { x: GAME_WIDTH, y: GAME_HEIGHT / 2 };
-let speedMultiplier = 1;
+// Store all rooms with their game states
+let rooms = {};
 
-let players = {
-    player1: null,
-    player2: null
-};
-
-let gameState = {
-    puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3 * speedMultiplier, vy: 2 * speedMultiplier },
-    player1: { x: 150, y: 300 },
-    player2: { x: 650, y: 300 },
-    scoreP1: 0,
-    scoreP2: 0
-};
+function createRoomState(multiplier = 1) {
+    return {
+        speedMultiplier: multiplier,
+        players: { player1: null, player2: null },
+        gameState: {
+            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3 * multiplier, vy: 2 * multiplier },
+            player1: { x: 150, y: 300 },
+            player2: { x: 650, y: 300 },
+            scoreP1: 0,
+            scoreP2: 0
+        }
+    };
+}
 
 io.on('connection', (socket) => {
     console.log(`Device connected: ${socket.id}`);
 
+    socket.on('joinRoom', (roomCode) => {
+        // Create room if it doesn't exist
+        if (!rooms[roomCode]) {
+            rooms[roomCode] = createRoomState();
+            console.log(`Room ${roomCode} created`);
+        }
+        
+        socket.join(roomCode);
+        socket.roomCode = roomCode;
+        socket.emit('roomJoined', roomCode);
+        console.log(`${socket.id} joined room ${roomCode}`);
+    });
+
     socket.on('requestHost', () => {
-        if (!players.player1) {
-            players.player1 = socket.id;
+        const room = rooms[socket.roomCode];
+        if (!room) {
+            socket.emit('roleDenied', 'Join a room first!');
+            return;
+        }
+        
+        if (!room.players.player1) {
+            room.players.player1 = socket.id;
             socket.emit('roleConfirmed', 'player1');
-            console.log(`${socket.id} confirmed as Host (Player 1)`);
+            console.log(`${socket.id} confirmed as Host (Player 1) in room ${socket.roomCode}`);
         } else {
             socket.emit('roleDenied', 'Host slot is already taken!');
         }
     });
 
     socket.on('requestJoin', () => {
-        if (!players.player2) {
-            players.player2 = socket.id;
+        const room = rooms[socket.roomCode];
+        if (!room) {
+            socket.emit('roleDenied', 'Join a room first!');
+            return;
+        }
+        
+        if (!room.players.player2) {
+            room.players.player2 = socket.id;
             socket.emit('roleConfirmed', 'player2');
-            console.log(`${socket.id} confirmed as Joiner (Player 2)`);
+            console.log(`${socket.id} confirmed as Joiner (Player 2) in room ${socket.roomCode}`);
         } else {
             socket.emit('roleDenied', 'Join slot is already taken!');
         }
     });
 
     socket.on('requestReset', () => {
-        gameState = {
-            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3 * speedMultiplier, vy: 2 * speedMultiplier },
+        const room = rooms[socket.roomCode];
+        if (!room) return;
+        
+        room.gameState = {
+            puck: { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2, vx: 3 * room.speedMultiplier, vy: 2 * room.speedMultiplier },
             player1: { x: 150, y: 300 },
             player2: { x: 650, y: 300 },
             scoreP1: 0,
             scoreP2: 0
         };
-        io.emit('gameStateUpdate', gameState);
+        io.to(socket.roomCode).emit('gameStateUpdate', room.gameState);
     });
 
     socket.on('updateMallet', (data) => {
-        if (socket.id === players.player1) {
-            gameState.player1.x = Math.min(data.x, 525);
-            gameState.player1.y = Math.max(PUCK_RADIUS, Math.min(data.y, GAME_HEIGHT - PUCK_RADIUS));
-        } else if (socket.id === players.player2) {
-            gameState.player2.x = Math.max(data.x, 555);
-            gameState.player2.y = Math.max(PUCK_RADIUS, Math.min(data.y, GAME_HEIGHT - PUCK_RADIUS));
+        const room = rooms[socket.roomCode];
+        if (!room) return;
+        
+        if (socket.id === room.players.player1) {
+            room.gameState.player1.x = Math.min(data.x, 525);
+            room.gameState.player1.y = Math.max(PUCK_RADIUS, Math.min(data.y, GAME_HEIGHT - PUCK_RADIUS));
+        } else if (socket.id === room.players.player2) {
+            room.gameState.player2.x = Math.max(data.x, 555);
+            room.gameState.player2.y = Math.max(PUCK_RADIUS, Math.min(data.y, GAME_HEIGHT - PUCK_RADIUS));
         }
     });
 
     socket.on('changeSpeedMultiplier', (newSpeed) => {
-        console.log('Received changeSpeedMultiplier event with value:', newSpeed);
-        if (newSpeed <= 0) {
-            console.log('Invalid speed multiplier');
-            return;
-        }
-        speedMultiplier = newSpeed;
-        console.log('Updated speedMultiplier to:', speedMultiplier);
-        // Reset puck with new speed
-        gameState.puck.x = GAME_WIDTH / 2;
-        gameState.puck.y = GAME_HEIGHT / 2;
-        gameState.puck.vx = 3 * speedMultiplier;
-        gameState.puck.vy = 2 * speedMultiplier;
-        io.emit('gameStateUpdate', gameState);
-        console.log('Puck velocity updated to:', gameState.puck.vx, gameState.puck.vy);
+        const room = rooms[socket.roomCode];
+        if (!room) return;
+        
+        if (newSpeed <= 0) return;
+        
+        room.speedMultiplier = newSpeed;
+        room.gameState.puck.x = GAME_WIDTH / 2;
+        room.gameState.puck.y = GAME_HEIGHT / 2;
+        room.gameState.puck.vx = 3 * room.speedMultiplier;
+        room.gameState.puck.vy = 2 * room.speedMultiplier;
+        io.to(socket.roomCode).emit('gameStateUpdate', room.gameState);
+        console.log(`Speed multiplier in room ${socket.roomCode} changed to: ${room.speedMultiplier}`);
     });
 
     socket.on('disconnect', () => {
-        if (socket.id === players.player1) {
-            players.player1 = null;
-            console.log('Host disconnected');
-        } else if (socket.id === players.player2) {
-            players.player2 = null;
-            console.log('Joiner disconnected');
+        const room = rooms[socket.roomCode];
+        if (room) {
+            if (socket.id === room.players.player1) {
+                room.players.player1 = null;
+                console.log('Host disconnected from room ' + socket.roomCode);
+            } else if (socket.id === room.players.player2) {
+                room.players.player2 = null;
+                console.log('Joiner disconnected from room ' + socket.roomCode);
+            }
+            
+            // Delete room if empty
+            if (!room.players.player1 && !room.players.player2) {
+                delete rooms[socket.roomCode];
+                console.log(`Room ${socket.roomCode} deleted`);
+            }
         }
     });
 });
 
-function resetPuck() {
-    gameState.puck = {
+function resetPuck(room) {
+    room.gameState.puck = {
         x: GAME_WIDTH / 2,
         y: GAME_HEIGHT / 2,
-        vx: 15 * speedMultiplier,
-        vy: 15 * speedMultiplier
+        vx: 15 * room.speedMultiplier,
+        vy: 15 * room.speedMultiplier
     };
 }
 
-function checkPaddleCollision(puck, paddle, isPlayer1) {
+function checkPaddleCollision(puck, paddle, isPlayer1, speedMultiplier) {
     const dx = puck.x - paddle.x;
     const dy = puck.y - paddle.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -129,20 +169,20 @@ function checkPaddleCollision(puck, paddle, isPlayer1) {
     return false;
 }
 
-function checkGoal() {
-    const puck = gameState.puck;
+function checkGoal(room) {
+    const puck = room.gameState.puck;
     const leftDistance = Math.sqrt((puck.x - LEFT_GOAL.x) ** 2 + (puck.y - LEFT_GOAL.y) ** 2);
     const rightDistance = Math.sqrt((puck.x - RIGHT_GOAL.x) ** 2 + (puck.y - RIGHT_GOAL.y) ** 2);
 
     if (leftDistance < GOAL_RADIUS) {
-        gameState.scoreP2 += 1;
-        resetPuck();
+        room.gameState.scoreP2 += 1;
+        resetPuck(room);
         return true;
     }
 
     if (rightDistance < GOAL_RADIUS) {
-        gameState.scoreP1 += 1;
-        resetPuck();
+        room.gameState.scoreP1 += 1;
+        resetPuck(room);
         return true;
     }
 
@@ -150,25 +190,31 @@ function checkGoal() {
 }
 
 setInterval(() => {
-    gameState.puck.x += gameState.puck.vx;
-    gameState.puck.y += gameState.puck.vy;
+    // Update all active rooms
+    for (let roomCode in rooms) {
+        const room = rooms[roomCode];
+        const puck = room.gameState.puck;
+        
+        puck.x += puck.vx;
+        puck.y += puck.vy;
 
-    checkPaddleCollision(gameState.puck, gameState.player1, true);
-    checkPaddleCollision(gameState.puck, gameState.player2, false);
+        checkPaddleCollision(puck, room.gameState.player1, true, room.speedMultiplier);
+        checkPaddleCollision(puck, room.gameState.player2, false, room.speedMultiplier);
 
-    if (checkGoal()) {
-        io.emit('gameStateUpdate', gameState);
-        return;
+        if (checkGoal(room)) {
+            io.to(roomCode).emit('gameStateUpdate', room.gameState);
+            continue;
+        }
+
+        if (puck.x < PUCK_RADIUS || puck.x > GAME_WIDTH - PUCK_RADIUS) {
+            puck.vx *= -1;
+        }
+        if (puck.y < PUCK_RADIUS || puck.y > GAME_HEIGHT - PUCK_RADIUS) {
+            puck.vy *= -1;
+        }
+
+        io.to(roomCode).emit('gameStateUpdate', room.gameState);
     }
-
-    if (gameState.puck.x < PUCK_RADIUS || gameState.puck.x > GAME_WIDTH - PUCK_RADIUS) {
-        gameState.puck.vx *= -1;
-    }
-    if (gameState.puck.y < PUCK_RADIUS || gameState.puck.y > GAME_HEIGHT - PUCK_RADIUS) {
-        gameState.puck.vy *= -1;
-    }
-
-    io.emit('gameStateUpdate', gameState);
 }, 1000 / 60);
 
 http.listen(3000, '0.0.0.0', () => console.log('Server listening on port 3000'));

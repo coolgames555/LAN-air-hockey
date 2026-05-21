@@ -13,6 +13,9 @@ puckImg.src = 'puck.png';
 const paddleSize = 90;
 const puckSize = 45;
 
+const roomSelector = document.getElementById('roomSelector');
+const roomCodeInput = document.getElementById('roomCodeInput');
+const roomError = document.getElementById('roomError');
 const menuDiv = document.getElementById('menu');
 const gameContainer = document.getElementById('gameContainer');
 const errorMsg = document.getElementById('menuError');
@@ -20,10 +23,30 @@ const statusText = document.getElementById('status');
 const scoreBoard = document.getElementById('scoreBoard');
 
 let myRole = 'spectator';
+let currentRoom = null;
 let gx1 = 0;
 let gy1 = 360;
 let gx2 = 1080;
 let gy2 = 360;
+
+// ---- ROOM SELECTION ----
+document.getElementById('joinRoomBtn').addEventListener('click', () => {
+    const roomCode = roomCodeInput.value.trim().toUpperCase();
+    if (!roomCode) {
+        roomError.innerText = 'Please enter a room code';
+        return;
+    }
+    
+    socket.emit('joinRoom', roomCode);
+});
+
+socket.on('roomJoined', (roomCode) => {
+    currentRoom = roomCode;
+    roomError.innerText = '';
+    roomSelector.style.display = 'none';
+    menuDiv.style.display = 'block';
+    console.log('Joined room:', roomCode);
+});
 
 // ----UI Interaction Hooks----
 document.getElementById('hostBtn').addEventListener('click', () => {
