@@ -7,4 +7,4 @@ This is a free, open-source online game. It may be basic, but it's kinda fun to 
 3. Pick wether to be P1 or P2 (host/join is vestigial)
 4. Have Fun
 
-#### Made for Hack Club: Macondo 🍐 🍐 🍐 
+### Made for Hack Club: Macondo 🍐 🍐 🍐 
